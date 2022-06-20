@@ -6,6 +6,9 @@ import subprocess
 from bpy_extras import view3d_utils
 from mathutils import Vector
 
+bpy.types.Scene.decastel_jau   = bpy.props.BoolProperty(default=True) 
+bpy.types.Scene.subdivisions = bpy.props.IntProperty(min=0, max=10, default=4)
+
 #----------KEY FUNCTION----------------------------------------------------
 key_name = "geo_key"
 

@@ -31,6 +31,11 @@ def set_server(obj):
         utils.save_file(obj.data, dir + "\\bezier\\data\\tmp.obj")
         utils.run_spline_server(dir, comm)
         comm.obj_key = obj[utils.key_name]
+    #Set params
+    if bpy.context.scene.decastel_jau: send = "od\n"
+    else: send = "os\n"
+    send += str( bpy.context.scene.subdivisions ) + "\n"
+    comm.s.sendall(send.encode())
 
 #----------SPLINE DRAWING FUNCTION-----------------------
 
@@ -52,14 +57,14 @@ def draw_curve(obj, curve):
         curve_line.points[i].co = (x, y, z, 1)
     
     material = bpy.data.materials.new(curve_name+"polygon_material")
-    material.diffuse_color = (0,0,1,1)
+    material.diffuse_color = (0.2,0.2,1,1)
     curve_data.materials.append(material)
     curve_data.bevel_depth = 0.01
   
 class GeodesicCurve(bpy.types.Operator):
     #Geodesic curve
     bl_idname = "view3d.modal_operator_geocurve"
-    bl_label = "Add geodesic curve"
+    bl_label = "Add bezier spline"
     bl_options = {'REGISTER','UNDO'}
 
     def __init__(self):
@@ -98,19 +103,11 @@ class GeodesicCurve(bpy.types.Operator):
                     #Enough points, draw
                     if len(self.points_bar) == 3:
                         self.points_bar.append( self.points_bar[-1] )    
-                        #Add key                    
-                        """
-                        if key_name not in obj:
-                            obj[key_name] = "o" + str(bpy.context.scene.total)
-                            bpy.types.Scene.total += 1
-                            utils.push_key(obj[key_name])
-                        """
                         #Create communication if necessary
                         self.report({'INFO'}, "Loading server")
                         set_server(obj)
                         self.report({'INFO'}, "Server loaded")
                         #Calculate curve and draw
-                        #_, _, curve = utils.get_all_data(comm.s, obj, self.points_bar)
                         try: curve = utils.get_curve(comm.s, obj, self.points_bar)
                         except:
                             del obj[utils.key_name]

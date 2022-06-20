@@ -10,7 +10,12 @@ import spline
 import edit
 import utils
 
-class GeodesicPanel(bpy.types.Panel):
+class MainPanel:
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_category = "Geodesic"
+
+class GeodesicPanel(MainPanel, bpy.types.Panel):
     """Creates a Panel in the Object properties window"""
     bl_label = "Geodesic Panel"
     bl_idname = "OBJECT_PT_geodesic"
@@ -26,24 +31,40 @@ class GeodesicPanel(bpy.types.Panel):
         
         row = layout.row()
         row.operator("view3d.edit_curve")
+        
+
+class PropertiesPanel(MainPanel, bpy.types.Panel):
+    bl_parent_id = "OBJECT_PT_geodesic"
+    bl_label = "Properties Panel"
+    bl_idname = "PROP_PT_geodesic"
+    bl_options = {"DEFAULT_CLOSED"}
+
+    def draw(self, context):
+        layout = self.layout
+        row = layout.row()
+        row.prop(context.scene, 'decastel_jau')
+        
+        row = layout.row()
+        row.prop(context.scene, 'subdivisions')
 
 @persistent
-def geometry_check(scene, depsgraph):
-    for obj in depsgraph.updates:
-        if utils.key_name in obj.id and obj.id[utils.key_name][0] == 'o' and obj.is_updated_geometry:
-            
-            print(obj.id.name + " geometry updated!, key: ", obj.id[utils.key_name])
-            del bpy.context.scene.objects[obj.id.name][utils.key_name]
-
+def remove_tan(scene):    
+    tan = utils.getObjByKey("t")
+    if tan is not None and not edit.is_running: 
+        bpy.data.objects.remove(tan, do_unlink=True)
+    
 # Register and add to the "view" menu (required to also use F3 search "Raycast View Modal Operator" for quick access)
 def register():
     bpy.utils.register_class(GeodesicPanel)
+    bpy.utils.register_class(PropertiesPanel)
     spline.register()
     edit.register()
     
-    #bpy.app.handlers.depsgraph_update_post.append(geometry_check)
+    bpy.app.handlers.undo_post.append(remove_tan)
+    bpy.app.handlers.redo_post.append(remove_tan)
 def unregister():
     bpy.utils.unregister_class(GeodesicPanel)
+    bpy.utils.unregister_class(PropertiesPanel)
     spline.unregister()
     edit.unregister()
 
