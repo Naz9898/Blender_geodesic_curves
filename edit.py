@@ -88,6 +88,8 @@ class EditCurveOperator(bpy.types.Operator):
                 except: return {'RUNNING_MODAL'}   
             #Undo
             else: bpy.ops.ed.undo()
+            self.split_mode = False
+            self.t0 = 0.1
             tan = utils.getObjByKey("t")
             if tan is None:
                 self.report({'WARNING'}, "Exiting editing mode")
@@ -120,6 +122,7 @@ class EditCurveOperator(bpy.types.Operator):
             elif event.type == 'LEFTMOUSE' and event.value == 'RELEASE':
                 if not self.split(context): return {'FINISHED'} 
                 self.split_mode = False
+                self.t0 = 0.1
                 self.report({'INFO'}, "Splitted")
                 if not self.draw_curve(): return {'FINISHED'}
                 if not self.draw_tan(context): return {'FINISHED'} 

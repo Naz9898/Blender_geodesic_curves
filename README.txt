@@ -1,7 +1,19 @@
  --------------
 | REQUIREMENTS |
  --------------
-Blender 2.80 or above
+Blender 3.00 or above
+CMake
+MINGW64 compiler
+
+ ----------------
+| COMPILE ENGINE |
+ ----------------
+Run CMAKE:
+- The source code folder is "./bezier"
+- The build folder is "./bezier/build"
+- Press Configure and Generate. Select "MINGW makefiles" as the generator for the project, and check "use default native compilers" when the prompt appears.
+Run the open the command prompt or the Powershell on ./bezier/build and run "make".
+If the engine has been compiled correctly the binary files should be located in the "./bezier/bin" folder
 
  ------------
 | HOW TO RUN |

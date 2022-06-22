@@ -150,12 +150,6 @@ def run_spline_server(directory, comm):
 #Kill C++ engine subprocess   
 def close_spline_server(comm):
     comm.s.sendall(b"a\n")
-    """
-    subprocess.Popen("TASKKILL /F /PID {pid} /T".format(pid=comm.process.pid))
-    comm.s.shutdown(socket.SHUT_RDWR)
-    comm.s.close()
-    print("Closed socket: ", comm.s)
-    """
     reset_spline_server(comm)
     
 def reset_spline_server(comm):
